@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Support - Casino Royale</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="text-gold">💬 AI Support Chat</h1>
+            <p>Have a question? Our AI is here to help you 24/7.</p>
+        </div>
+
+        <div class="card">
+            <!-- Chat response area -->
+            <div class="mb-3" style="min-height: 100px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem;">
+                <% if (response) { %>
+                    <p><strong>AI Assistant:</strong> <%- response %></p>
+                <% } else { %>
+                    <p style="opacity: 0.7;">The AI is waiting for your message...</p>
+                <% } %>
+            </div>
+
+            <!-- User input form -->
+            <form action="/api/chat" method="POST">
+                <label for="message">Your Message</label>
+                <input type="text" id="message" name="message" class="form-control" placeholder="Type your message here...">
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Send Message</button>
+            </form>
+        </div>
+
+        <div class="text-center" style="margin-top: 2rem;">
+            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

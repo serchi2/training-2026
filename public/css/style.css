@@ -1,0 +1,131 @@
+/* --- Midnight Gold Theme --- */
+
+/* 1. Import Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+/* 2. Global Styles & Color Palette */
+:root {
+    --bg-main: #0f172a; /* Deep Navy */
+    --surface: #1e293b;
+    --border-subtle: #334155;
+    --gold-start: #facc15;
+    --gold-end: #eab308;
+    --success: #22c55e; /* Neon Green */
+    --text-light: #e2e8f0;
+    --text-dark: #0f172a;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-light);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 2rem;
+}
+
+/* 3. Typography */
+h1, h2, h3, h4 {
+    font-weight: 700; /* bold */
+    letter-spacing: -0.025em; /* tracking-tight */
+}
+
+/* 4. Layout & Containers */
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.5rem; /* rounded-2xl */
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+}
+
+.mb-4 { margin-bottom: 2rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.text-center { text-align: center; }
+.d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+
+/* 5. Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.75rem; /* rounded-lg */
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, var(--gold-start), var(--gold-end));
+    color: var(--text-dark);
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+}
+
+.btn-secondary {
+    background-color: var(--surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-light);
+}
+
+.btn-secondary:hover {
+    background-color: #334155;
+}
+
+/* 6. Forms & Inputs */
+.form-control {
+    width: 100%;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-light);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--gold-start);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+
+/* 7. Game-Specific Styles */
+.game-card {
+    background-color: #0f172a;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.game-card h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.text-gold { color: var(--gold-start); }
+.text-success { color: var(--success); }
+
+/* Grid for games */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
