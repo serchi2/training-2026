@@ -5,24 +5,24 @@
     <title>Login - Casino Royale</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <div class="container">
-        <div class="card" style="max-width: 450px; margin: 4rem auto;">
-            <div class="text-center mb-4">
-                <h1 class="text-gold">Casino Royale</h1>
-                <p>Login to start playing</p>
-            </div>
+<body class="login-layout">
 
-            <form action="/login" method="POST">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="e.g., player1" required>
-                
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Your password" required>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Secure Login</button>
-            </form>
+    <div class="card" style="max-width: 450px; width: 100%;">
+        <div class="text-center mb-4">
+            <h1 class="text-gold">Casino Royale</h1>
+            <p>Login to start playing</p>
         </div>
+
+        <form action="/login" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="e.g., player1" required>
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Your password" required>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Secure Login</button>
+        </form>
     </div>
+
 </body>
 </html>

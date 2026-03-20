@@ -4,22 +4,84 @@
     <meta charset="UTF-8">
     <title>Slots - Casino Royale</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .slots-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+            background: var(--bg-surface-raised);
+            border-radius: var(--border-radius-lg);
+            font-size: 4rem; /* Larger symbols */
+        }
+        .slot {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--border-radius-md);
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
+<body class="app-layout">
+
+    <header class="header">
+        <h1>Casino Royale</h1>
+        <div>
+            <span>Balance: <span class="text-success">$<%= user.balance %></span></span>
+            <a href="/" class="btn btn-secondary" style="margin-left: 1rem;">Logout</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <h2>Navigation</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">🏠 Dashboard</a></li>
+                <li><a href="/slots" class="active">🎰 Slots</a></li>
+                <li><a href="/roulette">🎡 Roulette</a></li>
+                <li><a href="/blackjack">🃏 Blackjack</a></li>
+                <li><a href="/chat">💬 AI Support</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <div class="text-center mb-4">
             <h1 class="text-gold">🎰 Super Slots 🎰</h1>
-            <p>The reels are getting ready for you!</p>
+            <p>Cost: 10 credits. Prize for 3 matching symbols: 100 credits.</p>
         </div>
 
         <div class="card text-center">
-            <h2 style="opacity: 0.5;">Coming Soon...</h2>
-            <p>Our premium slot machines are being polished and will be available shortly.</p>
-        </div>
+            <div class="slots-container mb-4">
+                <% if (slotResult && slotResult.length === 3) { %>
+                    <div class="slot"><%= slotResult[0] %></div>
+                    <div class="slot"><%= slotResult[1] %></div>
+                    <div class="slot"><%= slotResult[2] %></div>
+                <% } else { %>
+                    <div class="slot">-</div>
+                    <div class="slot">-</div>
+                    <div class="slot">-</div>
+                <% } %>
+            </div>
 
-        <div class="text-center" style="margin-top: 2rem;">
-            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+            <% if (slotResult && slotResult[0] === slotResult[1] && slotResult[1] === slotResult[2]) { %>
+                <h2 class="text-success">🎉 YOU WIN! 🎉</h2>
+            <% } else if (slotResult) { %>
+                <h2 class="text-danger">Better luck next time!</h2>
+            <% } %>
+
+            <form action="/api/slots/spin" method="POST">
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 50%; margin-top: 2rem;">SPIN</button>
+            </form>
         </div>
-    </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Casino Royale. All rights reserved. Please play responsibly.</p>
+    </footer>
+
 </body>
 </html>

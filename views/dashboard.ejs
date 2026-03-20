@@ -5,41 +5,44 @@
     <title>Dashboard - Casino Royale</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="d-flex justify-between align-center mb-4">
-            <div>
-                <h1 class="text-gold">Casino Royale</h1>
-                <p>Welcome back, <%= user.username %>! </p>
-            </div>
-            <a href="/" class="btn btn-secondary">Logout</a>
-        </div>
+<body class="app-layout">
 
+    <header class="header">
+        <h1>Casino Royale</h1>
+        <div>
+            <span>Welcome, <%= user.username %>!</span>
+            <a href="/" class="btn btn-secondary" style="margin-left: 1rem;">Logout</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <h2>Navigation</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard" class="active">🏠 Dashboard</a></li>
+                <li><a href="/slots">🎰 Slots</a></li>
+                <li><a href="/roulette">🎡 Roulette</a></li>
+                <li><a href="/blackjack">🃏 Blackjack</a></li>
+                <li><a href="/chat">💬 AI Support</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <!-- Balance & Vitals -->
         <div class="card mb-4 text-center">
             <h2>Your Balance</h2>
             <h1 class="text-success" style="font-size: 3rem; margin: 0;">$<%= user.balance %></h1>
             <p style="margin: 0; opacity: 0.7;">Role: <%= user.role %></p>
-        </div>
-
-        <!-- Casino Floor -->
-        <div class="card mb-4">
-            <h2 class="text-center mb-3">Casino Floor</h2>
-            <div class="grid-3">
-                <a href="/slots" class="game-card" style="text-decoration: none; color: inherit;">
-                    <h4>🎰 Slots</h4>
-                    <p class="btn btn-primary">Play Slots</p>
-                </a>
-                <a href="/blackjack" class="game-card" style="text-decoration: none; color: inherit;">
-                    <h4>🃏 Blackjack</h4>
-                    <p class="btn btn-primary">Play Blackjack</p>
-                </a>
-                <a href="/roulette" class="game-card" style="text-decoration: none; color: inherit;">
-                    <h4>🎡 Roulette</h4>
-                    <p class="btn btn-primary">Play Roulette</p>
-                </a>
-            </div>
+            
+            <% if (user.role === 'admin') { %>
+                <div class="admin-actions" style="margin-top: 15px;">
+                    <form action="/api/add-funds" method="POST" class="d-flex justify-center align-center" style="gap: 10px;">
+                        <input type="number" name="amount" class="form-control" placeholder="e.g., 10000" required style="width: auto; margin-bottom: 0;">
+                        <button type="submit" class="btn btn-primary">Add Funds</button>
+                    </form>
+                </div>
+            <% } %>
         </div>
 
         <!-- Actions Grid -->
@@ -51,7 +54,7 @@
                     <label for="targetUserId">Target User ID</label>
                     <input type="number" id="targetUserId" name="targetUserId" class="form-control" placeholder="e.g., 2" required>
                     <label for="amount">Amount</label>
-                    <input type="number" id="amount" name="amount" class="form-control" placeholder="e.g., -50000" required>
+                    <input type="number" id="amount" name="amount" class="form-control" placeholder="e.g., 500" required>
                     <button type="submit" class="btn btn-secondary" style="width: 100%;">Transfer</button>
                 </form>
             </div>
@@ -62,18 +65,18 @@
                 <form action="/api/promo" method="POST">
                     <label for="promoCode">Promo Code</label>
                     <input type="text" id="promoCode" name="promoCode" class="form-control" placeholder="WELCOME100" required>
-                    <!-- Hidden field for Mass Assignment exploit -->
-                    <!-- <input type="hidden" name="role" value="admin"> -->
                     <button type="submit" class="btn btn-secondary" style="width: 100%;">Redeem</button>
                 </form>
             </div>
 
-            <!-- AI Support -->
-            <div class="card text-center d-flex" style="align-items: center; justify-content: center;">
-                 <a href="/chat" class="btn btn-secondary">💬 AI Support Chat</a>
-            </div>
+            <!-- Empty Card for alignment -->
+            <div class="card" style="background: transparent; border-color: transparent;"></div>
         </div>
+    </main>
 
-    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Casino Royale. All rights reserved. Please play responsibly.</p>
+    </footer>
+
 </body>
 </html>

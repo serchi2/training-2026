@@ -5,8 +5,30 @@
     <title>AI Support - Casino Royale</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-layout">
+
+    <header class="header">
+        <h1>Casino Royale</h1>
+        <div>
+            <span>Balance: <span class="text-success">$<%= user.balance %></span></span>
+            <a href="/" class="btn btn-secondary" style="margin-left: 1rem;">Logout</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <h2>Navigation</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">🏠 Dashboard</a></li>
+                <li><a href="/slots">🎰 Slots</a></li>
+                <li><a href="/roulette">🎡 Roulette</a></li>
+                <li><a href="/blackjack">🃏 Blackjack</a></li>
+                <li><a href="/chat" class="active">💬 AI Support</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <div class="text-center mb-4">
             <h1 class="text-gold">💬 AI Support Chat</h1>
             <p>Have a question? Our AI is here to help you 24/7.</p>
@@ -29,10 +51,11 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Send Message</button>
             </form>
         </div>
+    </main>
 
-        <div class="text-center" style="margin-top: 2rem;">
-            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
-        </div>
-    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Casino Royale. All rights reserved. Please play responsibly.</p>
+    </footer>
+
 </body>
 </html>

@@ -5,8 +5,30 @@
     <title>Blackjack - Casino Royale</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <div class="container">
+<body class="app-layout">
+
+    <header class="header">
+        <h1>Casino Royale</h1>
+        <div>
+            <span>Balance: <span class="text-success">$<%= user.balance %></span></span>
+            <a href="/" class="btn btn-secondary" style="margin-left: 1rem;">Logout</a>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <h2>Navigation</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">🏠 Dashboard</a></li>
+                <li><a href="/slots">🎰 Slots</a></li>
+                <li><a href="/roulette">🎡 Roulette</a></li>
+                <li><a href="/blackjack" class="active">🃏 Blackjack</a></li>
+                <li><a href="/chat">💬 AI Support</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         <div class="text-center mb-4">
             <h1 class="text-gold">🃏 Blackjack 🃏</h1>
             <p>The dealer is shuffling the cards.</p>
@@ -16,10 +38,11 @@
             <h2 style="opacity: 0.5;">Coming Soon...</h2>
             <p>Our exclusive Blackjack tables are being prepared and will be open shortly.</p>
         </div>
+    </main>
 
-        <div class="text-center" style="margin-top: 2rem;">
-            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
-        </div>
-    </div>
+    <footer class="footer">
+        <p>&copy; 2024 Casino Royale. All rights reserved. Please play responsibly.</p>
+    </footer>
+
 </body>
 </html>
