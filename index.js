@@ -83,9 +83,9 @@ const loadUser = (req, res, next) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    // Use parameterized query to prevent SQL injection
-    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
-    db.get(query, [username, password], (err, user) => {
+    // VULNERABILITY: SQL Injection due to string concatenation
+    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    db.get(query, (err, user) => {
         if (err) {
             console.error('Database error during login:', err.message);
             return res.status(500).send('Internal Server Error');
