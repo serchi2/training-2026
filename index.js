@@ -83,14 +83,20 @@ const loadUser = (req, res, next) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-    db.get(query, (err, user) => {
+    // Use parameterized query to prevent SQL injection
+    const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+    db.get(query, [username, password], (err, user) => {
+        if (err) {
+            console.error('Database error during login:', err.message);
+            return res.status(500).send('Internal Server Error');
+        }
         if (user) {
             req.session.userId = user.id;
             req.session.username = user.username;
             res.redirect('/dashboard');
         } else {
-            res.send("Login failed");
+            // Redirect back to login on failure, with an error flag
+            res.redirect('/?error=1');
         }
     });
 });
@@ -117,30 +123,53 @@ app.post('/api/add-funds', loadUser, (req, res) => {
 });
 
 app.post('/api/transfer', loadUser, (req, res) => {
-    const { targetUserId, amount } = req.body;
+    const { targetUsername, amount } = req.body;
+    const transferAmount = parseInt(amount, 10);
 
-    db.serialize(() => {
-        db.run(`UPDATE users SET balance = balance - ? WHERE id = ?`, [amount, req.session.userId], function(err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).send("Error during withdrawal.");
-            }
-            db.run(`UPDATE users SET balance = balance + ? WHERE id = ?`, [amount, targetUserId], function(err) {
+    if (!targetUsername || !transferAmount ) {
+        return res.status(400).send('Invalid request. Please specify a target username and a valid amount.');
+    }
+
+    // Find the target user by username
+    db.get(`SELECT * FROM users WHERE username = ?`, [targetUsername], (err, targetUser) => {
+        if (err) {
+            console.error('Database error finding target user:', err.message);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        if (!targetUser) {
+            return res.status(404).send('Target user not found.');
+        }
+
+        // Proceed with the transfer logic using targetUser.id
+        db.serialize(() => {
+            // 1. Deduct from sender
+            db.run(`UPDATE users SET balance = balance - ? WHERE id = ?`, [transferAmount, req.session.userId], function(err) {
                 if (err) {
-                    console.error(err);
-                    return res.status(500).send("Error during deposit.");
+                    console.error('Error during withdrawal:', err.message);
+                    return res.status(500).send('Error during withdrawal.');
                 }
-                res.redirect('/dashboard');
+
+                // 2. Add to receiver
+                db.run(`UPDATE users SET balance = balance + ? WHERE id = ?`, [transferAmount, targetUser.id], function(err) {
+                    if (err) {
+                        console.error('Error during deposit:', err.message);
+                        // IMPORTANT: In a real app, you would need to roll back the previous deduction here!
+                        return res.status(500).send('Error during deposit.');
+                    }
+                    res.redirect('/dashboard');
+                });
             });
         });
     });
 });
 
-app.post('/api/promo', loadUser, (req, res) => {
+
+app.get('/api/promo', loadUser, (req, res) => {
     let updates = [];
-    for (let key in req.body) {
+    for (let key in req.query) {
         if (key === 'promoCode') continue; 
-        updates.push(`${key} = '${req.body[key]}'`);
+        updates.push(`${key} = '${req.query[key]}'`);
     }
     if (updates.length > 0) {
         const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ${req.session.userId}`;
@@ -157,9 +186,11 @@ app.post('/api/chat', loadUser, (req, res) => {
     const userMessage = req.body.message || "";
     let botResponse = "Hello, I'm the casino bot. How can I help you?";
 
-    if (userMessage.toLowerCase().includes("forget all instructions")) {
+    // Check if the message contains "forget", making the prompt injection easier to discover
+    if (userMessage.toLowerCase().includes("forget")) {
         const parts = userMessage.split('return:');
         if (parts.length > 1) {
+            // The part after "return:" is rendered without sanitization
             botResponse = parts[1].trim();
         }
     }
@@ -240,9 +271,27 @@ app.post('/api/roulette-calc', loadUser, (req, res) => {
     let errorMessage = '';
 
     try {
+        // Unsafe eval is the vulnerability
         result = eval(betFormula);
     } catch (e) {
         errorMessage = e.message;
+    }
+
+    // Sanitize the output to prevent XSS from numbers/strings but allow object inspection
+    let output = '';
+    if (errorMessage) {
+        output = `<h1>❌ Error in Formula</h1><p>${errorMessage}</p>`;
+    } else if (typeof result === 'string' || result instanceof String) {
+        // Handle XSS payloads and other string results
+        // The result is the string itself, which might contain malicious HTML/JS
+        output = result;
+    } else if (typeof result === 'object' && result !== null) {
+        // Handle process.env and other object payloads
+        const formattedJson = JSON.stringify(result, null, 2).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        output = `<h1>🖥️ Server Response</h1><pre>${formattedJson}</pre>`;
+    } else {
+        // Handle legitimate number calculations
+        output = `<h1>💰 Potential Winnings</h1><p style="font-size: 2rem; color: #48bb78;">${result}</p>`;
     }
 
     res.send(`
@@ -251,17 +300,25 @@ app.post('/api/roulette-calc', loadUser, (req, res) => {
             <meta charset="UTF-8">
             <title>Calculation Result</title>
             <style>
-                body { background-color: #1a202c; color: #cbd5e0; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
-                .result-box { background-color: #2d3748; padding: 2rem; border-radius: 8px; text-align: center; }
+                body { background-color: #1a202c; color: #cbd5e0; font-family: monospace; display: flex; align-items: center; justify-content: center; height: 100vh; }
+                .result-box { background-color: #2d3748; padding: 2rem; border-radius: 8px; text-align: center; max-width: 80vw; }
                 .btn { display: inline-block; margin-top: 1.5rem; padding: 0.75rem 1.5rem; background-color: #4a5568; color: white; text-decoration: none; border-radius: 4px; }
+                pre {
+                    background-color: #1a202c;
+                    color: #cbd5e0;
+                    padding: 1rem;
+                    border-radius: 5px;
+                    text-align: left;
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                    max-height: 50vh; /* Allow scrolling for large objects */
+                    overflow-y: auto;
+                }
             </style>
         </head>
         <body>
             <div class="result-box">
-                ${errorMessage 
-                    ? `<h1>❌ Error in Formula</h1><p>${errorMessage}</p>` 
-                    : `<h1>💰 Potential Winnings</h1><p style="font-size: 2rem; color: #48bb78;">${result}</p>`
-                }
+                ${output}
                 <a href="/roulette" class="btn">Back to Roulette</a>
             </div>
         </body>
@@ -274,7 +331,8 @@ app.post('/api/roulette-calc', loadUser, (req, res) => {
 // ============================================================================
 
 app.get('/', (req, res) => {
-  res.render('login');
+  // Pass the error query parameter to the view
+  res.render('login', { error: req.query.error });
 });
 
 app.get('/dashboard', loadUser, (req, res) => {
@@ -285,7 +343,7 @@ app.get('/chat', loadUser, (req, res) => {
   res.render('chat', { response: null });
 });
 
-app.get('/slots', loadUser, (req, res) => {
+app.get('/slots', loadUser, fakeRng, (req, res) => {
     const lastResult = req.session.lastSlotResult || null;
     req.session.lastSlotResult = null; // Clear after reading
     res.render('slots', { slotResult: lastResult });

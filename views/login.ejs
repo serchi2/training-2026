@@ -13,6 +13,12 @@
             <p>Login to start playing</p>
         </div>
 
+        <% if (locals.error) { %>
+            <div style="color: #f56565; text-align: center; margin-bottom: 1rem; background-color: #4a2a2a; padding: 0.75rem; border-radius: 0.25rem;">
+                Invalid username or password. Please try again.
+            </div>
+        <% } %>
+
         <form action="/login" method="POST">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" class="form-control" placeholder="e.g., player1" required>
